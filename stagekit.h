@@ -48,20 +48,20 @@ extern int sk_init(char *filename);
 extern int send_raw_value(unsigned short left, unsigned short right);
 extern void sk_close(void);
 
-#ifndef SHARED_LIB
-#define sk_alloff() send_raw_value(0,STAGEKIT_ALLOFF);usleep(10000);send_raw_value(0,STAGEKIT_ALLOFF)   //sending this twice ensures the command is recieved. in testing, it would sometimes get stuck with only one off call. no clue why
-#define sk_nostrobe() send_raw_value(0,STAGEKIT_NO_STROBE);usleep(10000)
-#define sk_slowstrobe() send_raw_value(0,STAGEKIT_SLOW_STROBE);usleep(10000)
-#define sk_medstrobe() send_raw_value(0,STAGEKIT_MEDIUM_STROBE);usleep(10000)
-#define sk_faststrobe() send_raw_value(0,STAGEKIT_FAST_STROBE);usleep(10000)
-#define sk_fasteststrobe() send_raw_value(0,STAGEKIT_FAST_STROBE);usleep(10000)
-#define sk_fogon() send_raw_value(0,STAGEKIT_FOG_ON);usleep(10000)
-#define sk_fogoff() send_raw_value(0,STAGEKIT_FOG_OFF);usleep(10000)
-#define sk_setred(i) send_raw_value(i<<8,STAGEKIT_RED);usleep(10000)
-#define sk_setyellow(i) send_raw_value(i<<8,STAGEKIT_YELLOW);usleep(10000)
-#define sk_setgreen(i) send_raw_value(i<<8,STAGEKIT_GREEN);usleep(10000)
-#define sk_setblue(i) send_raw_value(i<<8,STAGEKIT_BLUE);usleep(10000)
-#define sk_setleds(r,y,g,b) send_raw_value(r<<8,STAGEKIT_RED);usleep(10000);send_raw_value(y<<8,STAGEKIT_YELLOW);usleep(10000);send_raw_value(g<<8,STAGEKIT_GREEN);usleep(10000);send_raw_value(b<<8,STAGEKIT_BLUE);usleep(10000)
-#endif
+extern void sk_alloff(void);
+extern void sk_nostrobe(void);
+extern void sk_slowstrobe(void);
+extern void sk_medstrobe(void);
+extern void sk_faststrobe(void);
+extern void sk_fasteststrobe(void);
+extern void sk_fogon(void);
+extern void sk_fogoff(void);
+
+extern void sk_setred(unsigned short left);
+extern void sk_setyellow(unsigned short left);
+extern void sk_setgreen(unsigned short left);
+extern void sk_setblue(unsigned short left);
+
+extern void sk_setleds(unsigned short red, unsigned short yellow, unsigned short green, unsigned short blue);
 
 #endif // STAGEKIT_H_INCLUDED

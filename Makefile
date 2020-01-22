@@ -3,28 +3,22 @@ CXX = g++
 AR = ar
 LD = g++
 
-CFLAGS =  -Wall -Werror -fpic -O2
-LDFLAGS =  -s
+CFLAGS = -Wall -Werror -O2
+LDFLAGS = -s
 
-OUT = stagekit
-OBJ = main.o stagekit.o
+all: stagekit libstagekit.so libstagekit.a
 
-SOUT = libstagekit.so
-SOBJ = extern.o stagekit-s.o
+stagekit: main.o libstagekit.a
+	$(LD) -o stagekit main.o libstagekit.a $(LDFLAGS)
 
-all: release shared
+libstagekit.so: stagekit-s.o
+	$(LD) -shared -o libstagekit.so stagekit-s.o $(LDFLAGS)
 
-release: $(OBJ)
-	$(LD) -o $(OUT) $(OBJ) $(LDFLAGS)
-
-shared: $(SOBJ)
-	$(LD) -shared -o $(SOUT) $(SOBJ) $(LDFLAGS)
-
-extern.o: extern.c
-	$(CC) $(CFLAGS) -c extern.c -o extern.o -DSHARED_LIB
-
+libstagekit.a: stagekit.o
+	$(AR) -crs libstagekit.a stagekit.o
+	
 stagekit-s.o: stagekit.c
-	$(CC) $(CFLAGS) -c stagekit.c -o stagekit-s.o -DSHARED_LIB
+	$(CC) $(CFLAGS) -fpic -c stagekit.c -o stagekit-s.o
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o main.o
@@ -33,4 +27,4 @@ stagekit.o: stagekit.c
 	$(CC) $(CFLAGS) -c stagekit.c -o stagekit.o
 
 clean:
-	rm $(OBJ) $(OUT) $(SOBJ) $(SOUT)
+	rm stagekit libstagekit.so libstagekit.a *.o	
