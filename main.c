@@ -9,12 +9,12 @@ int main()
     printf("Initializing StageKit...\n");
     sk_init(NULL);
     printf("0 - Panic\n1-5 - Strobe\n6 - Set red lights\n7 - Set yellow lights\n8 - Set green lights\n9 - Set blue lights\n10 - Fog on\n11 - Fog off\n");
-    while (i!=-1)
+    while (i != -1)
     {
-        if(scanf("%i", &i)==EOF)
+        if (scanf("%i", &i) == EOF)
             return 0;
 
-        switch(i)
+        switch (i)
         {
             case 0:
                 sk_alloff();
@@ -44,25 +44,25 @@ int main()
                 printf("Enter a value (in hex) for the red lights:");
                 scanf("%2x", &color);
                 sk_setred(color);
-                printf("Sent %2x to the red array\n",color);
+                printf("Sent %2x to the red array\n", color);
                 break;
             case 7:
                 printf("Enter a value (in hex) for the yellow lights:");
                 scanf("%2x", &color);
                 sk_setyellow(color);
-                printf("Sent %2x to the yellow array\n",color);
+                printf("Sent %2x to the yellow array\n", color);
                 break;
             case 8:
                 printf("Enter a value (in hex) for the green lights:");
                 scanf("%2x", &color);
                 sk_setgreen(color);
-                printf("Sent %2hx to the green array\n",color);
+                printf("Sent %2hx to the green array\n", color);
                 break;
             case 9:
                 printf("Enter a value (in hex) for the blue lights:");
                 scanf("%2x", &color);
                 sk_setblue(color);
-                printf("Sent %2x to the blue array\n",color);
+                printf("Sent %2x to the blue array\n", color);
                 break;
             case 10:
                 sk_fogon();

@@ -44,7 +44,7 @@
 #define STAGEKIT_GREEN 0x4000
 #define STAGEKIT_BLUE 0x2000
 
-extern int sk_init(char *filename);
+extern int sk_init(char* filename);
 extern int send_raw_value(unsigned short left, unsigned short right);
 extern void sk_close(void);
 
