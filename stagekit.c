@@ -248,8 +248,7 @@ void sk_setblue(unsigned short left)
     usleep(10000);
 }
 
-void sk_setleds(
-    unsigned short red, unsigned short yellow, unsigned short green, unsigned short blue)
+void sk_setleds(unsigned short red, unsigned short yellow, unsigned short green, unsigned short blue)
 {
     send_raw_value(red << 8, STAGEKIT_RED);
     usleep(10000);
