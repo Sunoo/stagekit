@@ -44,6 +44,10 @@
 #include <dirent.h>
 #include "stagekit.h"
 
+#ifdef SHARED_LIB
+#include "extern.h"
+#endif
+
 #ifdef __linux__
 #define HAS_LINUX_JOYSTICK_INTERFACE 1
 #endif
@@ -105,18 +109,17 @@ int sk_init(char *filename)
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
 	if (filename == NULL)
 	{
-	    int i;
 	    struct dirent *dp;
 	    const char *dir_path="/dev/input";
 	    DIR *dir = opendir(dir_path);
 	    printf("No event interface file passed. Probing for stagekit.\n");
 	    struct input_id device_info;
+		
 	    while((dp=readdir(dir))!=NULL)
 	    {
 	        if (strspn(dp->d_name,"event"))
 	        {
 	            char tryfile[256]="";
-                //printf("%i. %s\n", i, dp->d_name);
                 strcpy(tryfile, dir_path);
                 strcat(tryfile,"/");
                 strcat(tryfile,dp->d_name);
@@ -129,7 +132,7 @@ int sk_init(char *filename)
                 else
                 {
                     ioctl(event_fd, EVIOCGID, &device_info);
-                    //printf("vendor %04hx product %04hx version %04hx", device_info.vendor, device_info.product, device_info.version);
+					
                     if ((device_info.vendor == 0x0e6f) && (device_info.product == 0x0103))
                     {
                         printf("Stage kit found on %s\n",tryfile);

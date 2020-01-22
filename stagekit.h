@@ -48,6 +48,7 @@ extern int sk_init(char *filename);
 extern int send_raw_value(unsigned short left, unsigned short right);
 extern void sk_close(void);
 
+#ifndef SHARED_LIB
 #define sk_alloff() send_raw_value(0,STAGEKIT_ALLOFF);usleep(10000);send_raw_value(0,STAGEKIT_ALLOFF)   //sending this twice ensures the command is recieved. in testing, it would sometimes get stuck with only one off call. no clue why
 #define sk_nostrobe() send_raw_value(0,STAGEKIT_NO_STROBE);usleep(10000)
 #define sk_slowstrobe() send_raw_value(0,STAGEKIT_SLOW_STROBE);usleep(10000)
@@ -61,5 +62,6 @@ extern void sk_close(void);
 #define sk_setgreen(i) send_raw_value(i<<8,STAGEKIT_GREEN);usleep(10000)
 #define sk_setblue(i) send_raw_value(i<<8,STAGEKIT_BLUE);usleep(10000)
 #define sk_setleds(r,y,g,b) send_raw_value(r<<8,STAGEKIT_RED);usleep(10000);send_raw_value(y<<8,STAGEKIT_YELLOW);usleep(10000);send_raw_value(g<<8,STAGEKIT_GREEN);usleep(10000);send_raw_value(b<<8,STAGEKIT_BLUE);usleep(10000)
+#endif
 
 #endif // STAGEKIT_H_INCLUDED
