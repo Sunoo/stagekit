@@ -32,16 +32,11 @@
  * Wayne M. Galen <wayne.galen@gmail.com>
  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/ioctl.h>
-#include <errno.h>
 #include <dirent.h>
+#include <stdexcept>
 #include "stagekit.h"
 
 #ifdef __linux__
@@ -52,7 +47,6 @@
 #include <linux/input.h>
 
 static int event_fd;
-static char* default_event_file = "/dev/input/event6";
 static unsigned long features[4];
 static struct ff_effect effect;
 #endif
@@ -67,14 +61,15 @@ int send_raw_value(unsigned short left, unsigned short right)
 {
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
     struct input_event play;
-    /* download the effect */
+    // download the effect
     effect.u.rumble.strong_magnitude = left;
     effect.u.rumble.weak_magnitude = right;
 
     if (ioctl(event_fd, EVIOCSFF, &effect) == -1)
     {
-        printf("failed to upload effect: %s\n", strerror(errno));
-        ;
+        char errorMsg[256];
+        snprintf(errorMsg, 255, "failed to upload effect: %s\n", strerror(errno));
+        throw std::runtime_error(errorMsg);
     }
     play.type = EV_FF;
     play.code = effect.id;
@@ -93,38 +88,35 @@ void sk_close(void)
 #endif
 }
 
-int sk_init(char* filename)
+int sk_init(char** filenamePtr)
 {
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
+    char* filename = *filenamePtr;
     if (filename == NULL)
     {
         struct dirent* dp;
         const char* dir_path = "/dev/input";
         DIR* dir = opendir(dir_path);
-        printf("No event interface file passed. Probing for stagekit.\n");
+        // No event interface file passed. Probing for stagekit.
         struct input_id device_info;
 
         while ((dp = readdir(dir)) != NULL)
         {
             if (strspn(dp->d_name, "event"))
             {
-                char tryfile[256] = "";
+                char tryfile[256];
                 strcpy(tryfile, dir_path);
                 strcat(tryfile, "/");
                 strcat(tryfile, dp->d_name);
-                printf("Looking for stage kit on %s\n", tryfile);
                 event_fd = open(tryfile, O_RDWR);
-                if (event_fd < 0)
-                {
-                    fprintf(stderr, "Can't open %s: %s\n", tryfile, strerror(errno));
-                }
-                else
+                if (!(event_fd < 0))
                 {
                     ioctl(event_fd, EVIOCGID, &device_info);
 
                     if ((device_info.vendor == 0x0e6f) && (device_info.product == 0x0103))
                     {
-                        printf("Stage kit found on %s\n", tryfile);
+                        // Stage kit found
+                        *filenamePtr = tryfile;
                         break;
                     }
                     else
@@ -137,26 +129,24 @@ int sk_init(char* filename)
     }
     else
     {
-        filename = default_event_file;
-
         event_fd = open(filename, O_RDWR);
         if (event_fd < 0)
         {
-            fprintf(stderr, "Can't open %s: %s\n", filename, strerror(errno));
-            return -1;
+            char errorMsg[256];
+            snprintf(errorMsg, 255, "Can't open %s: %s", filename, strerror(errno));
+            throw std::runtime_error(errorMsg);
         }
-
-        printf("Device %s opened\n", filename);
     }
 
-    /* Query device */
+    // Query device
     if (ioctl(event_fd, EVIOCGBIT(EV_FF, sizeof(unsigned long) * 4), features) == -1)
     {
-        fprintf(stderr, "Query of rumble device failed: %s:%s\n", filename, strerror(errno));
-        return -1;
+        char errorMsg[256];
+        snprintf(errorMsg, 255, "Query of rumble device failed: %s:%s", filename, strerror(errno));
+        throw std::runtime_error(errorMsg);
     }
 
-    /* download a lights out effect */
+    // download a lights out effect
     effect.type = FF_RUMBLE;
     effect.id = -1;
     effect.direction = 0;
@@ -164,12 +154,19 @@ int sk_init(char* filename)
     effect.trigger.interval = 0;
     if (ioctl(event_fd, EVIOCSFF, &effect) == -1)
     {
-        fprintf(stdout, "%s: failed to allocate effect: %s\n", filename, strerror(errno));
+        char errorMsg[256];
+        snprintf(errorMsg, 255, "%s: failed to allocate effect: %s", filename, strerror(errno));
+        throw std::runtime_error(errorMsg);
     }
     return 0;
 #else
     return -1;
 #endif
+}
+
+int sk_init(char* filename)
+{
+    return sk_init(&filename);
 }
 
 void sk_alloff(void)
@@ -243,18 +240,6 @@ void sk_setgreen(unsigned short green)
 
 void sk_setblue(unsigned short blue)
 {
-    send_raw_value(blue << 8, STAGEKIT_BLUE);
-    usleep(10000);
-}
-
-void sk_setleds(unsigned short red, unsigned short yellow, unsigned short green, unsigned short blue)
-{
-    send_raw_value(red << 8, STAGEKIT_RED);
-    usleep(10000);
-    send_raw_value(yellow << 8, STAGEKIT_YELLOW);
-    usleep(10000);
-    send_raw_value(green << 8, STAGEKIT_GREEN);
-    usleep(10000);
     send_raw_value(blue << 8, STAGEKIT_BLUE);
     usleep(10000);
 }

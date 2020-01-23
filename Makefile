@@ -16,15 +16,15 @@ libstagekit.so: stagekit-s.o
 
 libstagekit.a: stagekit.o
 	$(AR) -crs libstagekit.a stagekit.o
-	
-stagekit-s.o: stagekit.c
-	$(CC) $(CFLAGS) -fpic -c stagekit.c -o stagekit-s.o
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c -o main.o
+stagekit-s.o: stagekit.cpp
+	$(CXX) $(CFLAGS) -fpic -c stagekit.cpp -o stagekit-s.o
 
-stagekit.o: stagekit.c
-	$(CC) $(CFLAGS) -c stagekit.c -o stagekit.o
+main.o: main.cpp
+	$(CXX) $(CFLAGS) -c main.cpp -o main.o
+
+stagekit.o: stagekit.cpp
+	$(CXX) $(CFLAGS) -c stagekit.cpp -o stagekit.o
 
 clean:
 	rm stagekit libstagekit.so libstagekit.a *.o	

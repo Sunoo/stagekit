@@ -29,7 +29,6 @@
 
 #ifndef STAGEKIT_H_INCLUDED
 #define STAGEKIT_H_INCLUDED
-#include <unistd.h>
 
 #define STAGEKIT_ALLOFF 0xFFFF
 #define STAGEKIT_NO_STROBE 0x700
@@ -45,6 +44,8 @@
 #define STAGEKIT_BLUE 0x2000
 
 extern int sk_init(char* filename);
+//extern int sk_init(char* filename, char** errorPtr);
+extern int sk_init(char** filenamePtr);
 extern int send_raw_value(unsigned short left, unsigned short right);
 extern void sk_close(void);
 
@@ -61,7 +62,5 @@ extern void sk_setred(unsigned short red);
 extern void sk_setyellow(unsigned short yellow);
 extern void sk_setgreen(unsigned short green);
 extern void sk_setblue(unsigned short blue);
-
-extern void sk_setleds(unsigned short red, unsigned short yellow, unsigned short green, unsigned short blue);
 
 #endif // STAGEKIT_H_INCLUDED

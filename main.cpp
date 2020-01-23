@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
+#include <stdexcept>
 #include "stagekit.h"
 
 int main()
@@ -7,8 +8,17 @@ int main()
     int i;
     unsigned int color;
     printf("Initializing StageKit...\n");
-    sk_init(NULL);
-    printf("0 - Panic\n1-5 - Strobe\n6 - Set red lights\n7 - Set yellow lights\n8 - Set green lights\n9 - Set blue lights\n10 - Fog on\n11 - Fog off\n");
+    char* filename = (char*)"/dev/test";
+    sk_init(&filename);
+    printf("Found StageKit on %s\n", filename);
+    printf("0 - Panic\n");
+    printf("1-5 - Strobe\n");
+    printf("6 - Set red lights\n");
+    printf("7 - Set yellow lights\n");
+    printf("8 - Set green lights\n");
+    printf("9 - Set blue lights\n");
+    printf("10 - Fog on\n");
+    printf("11 - Fog off\n");
     while (i != -1)
     {
         if (scanf("%i", &i) == EOF)
