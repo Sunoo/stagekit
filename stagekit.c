@@ -137,7 +137,6 @@ int sk_init(char* filename)
     }
     else
     {
-
         filename = default_event_file;
 
         event_fd = open(filename, O_RDWR);
@@ -177,9 +176,9 @@ void sk_alloff(void)
 {
     send_raw_value(0, STAGEKIT_ALLOFF);
     usleep(10000);
-    // sending this twice ensures the command is recieved. in testing, it would sometimes get stuck
-    // with only one off call. no clue why
+    // sending this twice ensures the command is recieved. in testing, it would sometimes get stuck with only one off call. no clue why
     send_raw_value(0, STAGEKIT_ALLOFF);
+    usleep(10000);
 }
 
 void sk_nostrobe(void)
@@ -224,27 +223,27 @@ void sk_fogoff(void)
     usleep(10000);
 }
 
-void sk_setred(unsigned short left)
+void sk_setred(unsigned short red)
 {
-    send_raw_value(left << 8, STAGEKIT_RED);
+    send_raw_value(red << 8, STAGEKIT_RED);
     usleep(10000);
 }
 
-void sk_setyellow(unsigned short left)
+void sk_setyellow(unsigned short yellow)
 {
-    send_raw_value(left << 8, STAGEKIT_YELLOW);
+    send_raw_value(yellow << 8, STAGEKIT_YELLOW);
     usleep(10000);
 }
 
-void sk_setgreen(unsigned short left)
+void sk_setgreen(unsigned short green)
 {
-    send_raw_value(left << 8, STAGEKIT_GREEN);
+    send_raw_value(green << 8, STAGEKIT_GREEN);
     usleep(10000);
 }
 
-void sk_setblue(unsigned short left)
+void sk_setblue(unsigned short blue)
 {
-    send_raw_value(left << 8, STAGEKIT_BLUE);
+    send_raw_value(blue << 8, STAGEKIT_BLUE);
     usleep(10000);
 }
 

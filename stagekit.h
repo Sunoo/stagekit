@@ -57,10 +57,10 @@ extern void sk_fasteststrobe(void);
 extern void sk_fogon(void);
 extern void sk_fogoff(void);
 
-extern void sk_setred(unsigned short left);
-extern void sk_setyellow(unsigned short left);
-extern void sk_setgreen(unsigned short left);
-extern void sk_setblue(unsigned short left);
+extern void sk_setred(unsigned short red);
+extern void sk_setyellow(unsigned short yellow);
+extern void sk_setgreen(unsigned short green);
+extern void sk_setblue(unsigned short blue);
 
 extern void sk_setleds(unsigned short red, unsigned short yellow, unsigned short green, unsigned short blue);
 
