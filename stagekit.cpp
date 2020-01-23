@@ -76,7 +76,10 @@ void send_raw_value(unsigned short left, unsigned short right)
     play.value = 1;
 
     if (write(event_fd, (const void*)&play, sizeof(play)) == -1)
-        throw std::runtime_error((char*)"write returned -1");
+    {
+        char errorMsg[256];
+        snprintf(errorMsg, 255, "write returned -1");
+    }
 #endif
 }
 
@@ -97,6 +100,7 @@ char* sk_init(char* filename)
         DIR* dir = opendir(dir_path);
         // No event interface file passed. Probing for stagekit.
         struct input_id device_info;
+        bool found = false;
 
         while ((dp = readdir(dir)) != NULL)
         {
@@ -114,7 +118,9 @@ char* sk_init(char* filename)
                     if ((device_info.vendor == 0x0e6f) && (device_info.product == 0x0103))
                     {
                         // Stage kit found
-                        filename = tryfile;
+                        filename = new char[256];
+                        strcpy(filename, tryfile);
+                        found = true;
                         break;
                     }
                     else
@@ -123,6 +129,12 @@ char* sk_init(char* filename)
                     }
                 }
             }
+        }
+        if (!found)
+        {
+            char errorMsg[256];
+            snprintf(errorMsg, 255, "No StageKit found");
+            throw std::runtime_error(errorMsg);
         }
     }
     else
