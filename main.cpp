@@ -30,23 +30,23 @@ int main()
                 printf("Turned off everything\n");
                 break;
             case 1:
-                sk_nostrobe();
+                sk_setstrobe(0);
                 printf("Turned off strobe\n");
                 break;
             case 2:
-                sk_slowstrobe();
+                sk_setstrobe(1);
                 printf("Started a slow strobe\n");
                 break;
             case 3:
-                sk_medstrobe();
+                sk_setstrobe(2);
                 printf("Started a medium strobe\n");
                 break;
             case 4:
-                sk_faststrobe();
+                sk_setstrobe(3);
                 printf("Started a fast strobe\n");
                 break;
             case 5:
-                sk_fasteststrobe();
+                sk_setstrobe(4);
                 printf("Started the fastest strobe\n");
                 break;
             case 6:
@@ -74,11 +74,11 @@ int main()
                 printf("Sent %2x to the blue array\n", color);
                 break;
             case 10:
-                sk_fogon();
+                sk_setfog(true);
                 printf("Fog engaged\n");
                 break;
             case 11:
-                sk_fogoff();
+                sk_setfog(false);
                 printf("Fog disengaged\n");
                 break;
             case 12:

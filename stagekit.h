@@ -48,13 +48,8 @@ extern void send_raw_value(unsigned short left, unsigned short right);
 extern void sk_close(void);
 
 extern void sk_alloff(void);
-extern void sk_nostrobe(void);
-extern void sk_slowstrobe(void);
-extern void sk_medstrobe(void);
-extern void sk_faststrobe(void);
-extern void sk_fasteststrobe(void);
-extern void sk_fogon(void);
-extern void sk_fogoff(void);
+extern void sk_setstrobe(unsigned short speed);
+extern void sk_setfog(bool fogon);
 
 extern void sk_setred(unsigned short red);
 extern void sk_setyellow(unsigned short yellow);

@@ -183,45 +183,41 @@ void sk_alloff(void)
     usleep(10000);
 }
 
-void sk_nostrobe(void)
+void sk_setstrobe(unsigned short speed)
 {
-    send_raw_value(0, STAGEKIT_NO_STROBE);
+    if (speed == 0)
+    {
+        send_raw_value(0, STAGEKIT_NO_STROBE);
+    }
+    else if (speed == 1)
+    {
+        send_raw_value(0, STAGEKIT_SLOW_STROBE);
+    }
+    else if (speed == 2)
+    {
+        send_raw_value(0, STAGEKIT_MEDIUM_STROBE);
+    }
+    else if (speed == 3)
+    {
+        send_raw_value(0, STAGEKIT_FAST_STROBE);
+    }
+    else if (speed == 4)
+    {
+        send_raw_value(0, STAGEKIT_FAST_STROBE);
+    }
     usleep(10000);
 }
 
-void sk_slowstrobe(void)
+void sk_setfog(bool fogon)
 {
-    send_raw_value(0, STAGEKIT_SLOW_STROBE);
-    usleep(10000);
-}
-
-void sk_medstrobe(void)
-{
-    send_raw_value(0, STAGEKIT_MEDIUM_STROBE);
-    usleep(10000);
-}
-
-void sk_faststrobe(void)
-{
-    send_raw_value(0, STAGEKIT_FAST_STROBE);
-    usleep(10000);
-}
-
-void sk_fasteststrobe(void)
-{
-    send_raw_value(0, STAGEKIT_FAST_STROBE);
-    usleep(10000);
-}
-
-void sk_fogon(void)
-{
-    send_raw_value(0, STAGEKIT_FOG_ON);
-    usleep(10000);
-}
-
-void sk_fogoff(void)
-{
-    send_raw_value(0, STAGEKIT_FOG_OFF);
+    if (fogon)
+    {
+        send_raw_value(0, STAGEKIT_FOG_ON);
+    }
+    else
+    {
+        send_raw_value(0, STAGEKIT_FOG_OFF);
+    }
     usleep(10000);
 }
 
