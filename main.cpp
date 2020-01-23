@@ -8,8 +8,7 @@ int main()
     int i;
     unsigned int color;
     printf("Initializing StageKit...\n");
-    char* filename = (char*)"/dev/test";
-    sk_init(&filename);
+    char* filename = sk_init(NULL);
     printf("Found StageKit on %s\n", filename);
     printf("0 - Panic\n");
     printf("1-5 - Strobe\n");

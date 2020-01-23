@@ -57,7 +57,7 @@ static struct ff_effect effect;
 #define LONG(x) ((x) / BITS_PER_LONG)
 #define test_bit(bit, array) ((array[LONG(bit)] >> OFF(bit)) & 1)
 
-int send_raw_value(unsigned short left, unsigned short right)
+void send_raw_value(unsigned short left, unsigned short right)
 {
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
     struct input_event play;
@@ -76,9 +76,8 @@ int send_raw_value(unsigned short left, unsigned short right)
     play.value = 1;
 
     if (write(event_fd, (const void*)&play, sizeof(play)) == -1)
-        return -1;
+        throw std::runtime_error((char*)"write returned -1");
 #endif
-    return 0;
 }
 
 void sk_close(void)
@@ -88,10 +87,9 @@ void sk_close(void)
 #endif
 }
 
-int sk_init(char** filenamePtr)
+char* sk_init(char* filename)
 {
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
-    char* filename = *filenamePtr;
     if (filename == NULL)
     {
         struct dirent* dp;
@@ -116,7 +114,7 @@ int sk_init(char** filenamePtr)
                     if ((device_info.vendor == 0x0e6f) && (device_info.product == 0x0103))
                     {
                         // Stage kit found
-                        *filenamePtr = tryfile;
+                        filename = tryfile;
                         break;
                     }
                     else
@@ -158,15 +156,10 @@ int sk_init(char** filenamePtr)
         snprintf(errorMsg, 255, "%s: failed to allocate effect: %s", filename, strerror(errno));
         throw std::runtime_error(errorMsg);
     }
-    return 0;
+    return filename;
 #else
-    return -1;
+    return NULL;
 #endif
-}
-
-int sk_init(char* filename)
-{
-    return sk_init(&filename);
 }
 
 void sk_alloff(void)
