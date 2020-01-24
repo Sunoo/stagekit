@@ -36,7 +36,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
-#include <stdexcept>
+#include <stdbool.h>
+#include <stdio.h>
+#include <errno.h>
 #include "stagekit.h"
 
 #ifdef __linux__
@@ -57,7 +59,7 @@ static struct ff_effect effect;
 #define LONG(x) ((x) / BITS_PER_LONG)
 #define test_bit(bit, array) ((array[LONG(bit)] >> OFF(bit)) & 1)
 
-void send_raw_value(unsigned short left, unsigned short right)
+int send_raw_value(unsigned short left, unsigned short right, char** errorStr)
 {
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
     struct input_event play;
@@ -69,7 +71,8 @@ void send_raw_value(unsigned short left, unsigned short right)
     {
         char errorMsg[256];
         snprintf(errorMsg, 255, "failed to upload effect: %s\n", strerror(errno));
-        throw std::runtime_error(errorMsg);
+        *errorStr = strdup(errorMsg);
+        return -1;
     }
     play.type = EV_FF;
     play.code = effect.id;
@@ -77,20 +80,26 @@ void send_raw_value(unsigned short left, unsigned short right)
 
     if (write(event_fd, (const void*)&play, sizeof(play)) == -1)
     {
-        char errorMsg[256];
-        snprintf(errorMsg, 255, "write returned -1");
+        *errorStr = strdup("write returned -1");
+        return -1;
     }
+    return 0;
+#else
+    return -10;
 #endif
 }
 
-void sk_close(void)
+int sk_close(char** errorStr)
 {
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
     close(event_fd);
+    return 0;
+#else
+    return -10;
 #endif
 }
 
-char* sk_init(char* filename)
+int sk_init(char* filename, char** foundfile, char** errorStr)
 {
 #ifdef HAS_LINUX_JOYSTICK_INTERFACE
     if (filename == NULL)
@@ -118,8 +127,7 @@ char* sk_init(char* filename)
                     if ((device_info.vendor == 0x0e6f) && (device_info.product == 0x0103))
                     {
                         // Stage kit found
-                        filename = new char[256];
-                        strcpy(filename, tryfile);
+                        filename = tryfile;
                         found = true;
                         break;
                     }
@@ -132,9 +140,8 @@ char* sk_init(char* filename)
         }
         if (!found)
         {
-            char errorMsg[256];
-            snprintf(errorMsg, 255, "No StageKit found");
-            throw std::runtime_error(errorMsg);
+            *errorStr = strdup("No StageKit found");
+            return -1;
         }
     }
     else
@@ -144,7 +151,8 @@ char* sk_init(char* filename)
         {
             char errorMsg[256];
             snprintf(errorMsg, 255, "Can't open %s: %s", filename, strerror(errno));
-            throw std::runtime_error(errorMsg);
+            *errorStr = strdup(errorMsg);
+            return -1;
         }
     }
 
@@ -153,7 +161,8 @@ char* sk_init(char* filename)
     {
         char errorMsg[256];
         snprintf(errorMsg, 255, "Query of rumble device failed: %s:%s", filename, strerror(errno));
-        throw std::runtime_error(errorMsg);
+        *errorStr = strdup(errorMsg);
+        return -1;
     }
 
     // download a lights out effect
@@ -166,81 +175,100 @@ char* sk_init(char* filename)
     {
         char errorMsg[256];
         snprintf(errorMsg, 255, "%s: failed to allocate effect: %s", filename, strerror(errno));
-        throw std::runtime_error(errorMsg);
+        *errorStr = strdup(errorMsg);
+        return -1;
     }
-    return filename;
+    *foundfile = strdup(filename);
+    return 0;
 #else
-    return NULL;
+    return -10;
 #endif
 }
 
-void sk_alloff(void)
+int sk_alloff(char** errorStr)
 {
-    send_raw_value(0, STAGEKIT_ALLOFF);
+    int error = send_raw_value(0, STAGEKIT_ALLOFF, errorStr);
     usleep(10000);
+    if (error != 0)
+    {
+        return error;
+    }
     // sending this twice ensures the command is recieved. in testing, it would sometimes get stuck with only one off call. no clue why
-    send_raw_value(0, STAGEKIT_ALLOFF);
+    error = send_raw_value(0, STAGEKIT_ALLOFF, errorStr);
     usleep(10000);
+    return error;
 }
 
-void sk_setstrobe(unsigned short speed)
+int sk_setstrobe(unsigned short speed, char** errorStr)
 {
+    int error;
     if (speed == 0)
     {
-        send_raw_value(0, STAGEKIT_NO_STROBE);
+        error = send_raw_value(0, STAGEKIT_NO_STROBE, errorStr);
     }
     else if (speed == 1)
     {
-        send_raw_value(0, STAGEKIT_SLOW_STROBE);
+        error = send_raw_value(0, STAGEKIT_SLOW_STROBE, errorStr);
     }
     else if (speed == 2)
     {
-        send_raw_value(0, STAGEKIT_MEDIUM_STROBE);
+        error = send_raw_value(0, STAGEKIT_MEDIUM_STROBE, errorStr);
     }
     else if (speed == 3)
     {
-        send_raw_value(0, STAGEKIT_FAST_STROBE);
+        error = send_raw_value(0, STAGEKIT_FAST_STROBE, errorStr);
     }
     else if (speed == 4)
     {
-        send_raw_value(0, STAGEKIT_FAST_STROBE);
-    }
-    usleep(10000);
-}
-
-void sk_setfog(bool fogon)
-{
-    if (fogon)
-    {
-        send_raw_value(0, STAGEKIT_FOG_ON);
+        error = send_raw_value(0, STAGEKIT_FAST_STROBE, errorStr);
     }
     else
     {
-        send_raw_value(0, STAGEKIT_FOG_OFF);
+       return -1;
     }
     usleep(10000);
+    return error;
 }
 
-void sk_setred(unsigned short red)
+int sk_setfog(bool fog, char** errorStr)
 {
-    send_raw_value(red << 8, STAGEKIT_RED);
+    int error;
+    if (fog)
+    {
+        error = send_raw_value(0, STAGEKIT_FOG_ON, errorStr);
+    }
+    else
+    {
+        error = send_raw_value(0, STAGEKIT_FOG_OFF, errorStr);
+    }
     usleep(10000);
+    return error;
 }
 
-void sk_setyellow(unsigned short yellow)
+int sk_setred(unsigned short red, char** errorStr)
 {
-    send_raw_value(yellow << 8, STAGEKIT_YELLOW);
+    int error = send_raw_value(red << 8, STAGEKIT_RED, errorStr);
     usleep(10000);
+    return error;
 }
 
-void sk_setgreen(unsigned short green)
+int sk_setyellow(unsigned short yellow, char** errorStr)
 {
-    send_raw_value(green << 8, STAGEKIT_GREEN);
+    int error = send_raw_value(yellow << 8, STAGEKIT_YELLOW, errorStr);
     usleep(10000);
+    return error;
 }
 
-void sk_setblue(unsigned short blue)
+int sk_setgreen(unsigned short green, char** errorStr)
 {
-    send_raw_value(blue << 8, STAGEKIT_BLUE);
+    int error = send_raw_value(green << 8, STAGEKIT_GREEN, errorStr);
     usleep(10000);
+    return error;
+}
+
+int sk_setblue(unsigned short blue, char** errorStr)
+{
+    int error = send_raw_value(blue << 8, STAGEKIT_BLUE, errorStr);
+    usleep(10000);
+    return error;
 }

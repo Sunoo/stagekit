@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <stdexcept>
+#include <stdbool.h>
 #include "stagekit.h"
 
 int main()
@@ -8,8 +9,14 @@ int main()
     int i;
     unsigned int color;
     printf("Initializing StageKit...\n");
-    char* filename = sk_init(NULL);
-    printf("Found StageKit on %s\n", filename);
+    char* errorStr = "";
+    char* foundfile = "";
+    int error = sk_init("/dev/test", &foundfile, &errorStr);
+    if (error != 0) {
+        printf("%s\n", errorStr);
+        exit(error);
+    }
+    printf("Found StageKit on %s\n", foundfile);
     printf("0 - Panic\n");
     printf("1-5 - Strobe\n");
     printf("6 - Set red lights\n");
@@ -21,69 +28,76 @@ int main()
     while (i != -1)
     {
         if (scanf("%i", &i) == EOF)
+        {
             return 0;
+        }
 
         switch (i)
         {
             case 0:
-                sk_alloff();
+                error = sk_alloff(&errorStr);
                 printf("Turned off everything\n");
                 break;
             case 1:
-                sk_setstrobe(0);
+                error = sk_setstrobe(0, &errorStr);
                 printf("Turned off strobe\n");
                 break;
             case 2:
-                sk_setstrobe(1);
+                error = sk_setstrobe(1, &errorStr);
                 printf("Started a slow strobe\n");
                 break;
             case 3:
-                sk_setstrobe(2);
+                error = sk_setstrobe(2, &errorStr);
                 printf("Started a medium strobe\n");
                 break;
             case 4:
-                sk_setstrobe(3);
+                error = sk_setstrobe(3, &errorStr);
                 printf("Started a fast strobe\n");
                 break;
             case 5:
-                sk_setstrobe(4);
+                error = sk_setstrobe(4, &errorStr);
                 printf("Started the fastest strobe\n");
                 break;
             case 6:
                 printf("Enter a value (in hex) for the red lights:");
                 scanf("%2x", &color);
-                sk_setred(color);
+                error = sk_setred(color, &errorStr);
                 printf("Sent %2x to the red array\n", color);
                 break;
             case 7:
                 printf("Enter a value (in hex) for the yellow lights:");
                 scanf("%2x", &color);
-                sk_setyellow(color);
+                error = sk_setyellow(color, &errorStr);
                 printf("Sent %2x to the yellow array\n", color);
                 break;
             case 8:
                 printf("Enter a value (in hex) for the green lights:");
                 scanf("%2x", &color);
-                sk_setgreen(color);
+                error = sk_setgreen(color, &errorStr);
                 printf("Sent %2hx to the green array\n", color);
                 break;
             case 9:
                 printf("Enter a value (in hex) for the blue lights:");
                 scanf("%2x", &color);
-                sk_setblue(color);
+                error = sk_setblue(color, &errorStr);
                 printf("Sent %2x to the blue array\n", color);
                 break;
             case 10:
-                sk_setfog(true);
+                error = sk_setfog(true, &errorStr);
                 printf("Fog engaged\n");
                 break;
             case 11:
-                sk_setfog(false);
+                error = sk_setfog(false, &errorStr);
                 printf("Fog disengaged\n");
                 break;
             case 12:
+                error = 0;
                 usleep(60000);
                 break;
+        }
+        if (error != 0) {
+            printf("%s\n", errorStr);
+            exit(error);
         }
     }
     return 0;

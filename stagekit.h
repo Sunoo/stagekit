@@ -43,17 +43,17 @@
 #define STAGEKIT_GREEN 0x4000
 #define STAGEKIT_BLUE 0x2000
 
-extern char* sk_init(char* filename);
-extern void send_raw_value(unsigned short left, unsigned short right);
-extern void sk_close(void);
+extern int sk_init(char* filename, char** foundfile, char** errorStr);
+extern int send_raw_value(unsigned short left, unsigned short right, char** errorStr);
+extern int sk_close(char** errorStr);
 
-extern void sk_alloff(void);
-extern void sk_setstrobe(unsigned short speed);
-extern void sk_setfog(bool fogon);
+extern int sk_alloff(char** errorStr);
+extern int sk_setstrobe(unsigned short speed, char** errorStr);
+extern int sk_setfog(bool fog, char** errorStr);
 
-extern void sk_setred(unsigned short red);
-extern void sk_setyellow(unsigned short yellow);
-extern void sk_setgreen(unsigned short green);
-extern void sk_setblue(unsigned short blue);
+extern int sk_setred(unsigned short red, char** errorStr);
+extern int sk_setyellow(unsigned short yellow, char** errorStr);
+extern int sk_setgreen(unsigned short green, char** errorStr);
+extern int sk_setblue(unsigned short blue, char** errorStr);
 
 #endif // STAGEKIT_H_INCLUDED
