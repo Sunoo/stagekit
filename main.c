@@ -11,7 +11,7 @@ int main()
     printf("Initializing StageKit...\n");
     char* errorStr = "";
     char* foundfile = "";
-    int error = sk_init("/dev/test", &foundfile, &errorStr);
+    int error = sk_init(NULL, &foundfile, &errorStr);
     if (error != 0) {
         printf("%s\n", errorStr);
         exit(error);

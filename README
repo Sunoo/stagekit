@@ -16,10 +16,10 @@ sk_close()
 sk_alloff()
     Sends a "panic" signal to turn everything off at once.
 
-sk_strobe(speed)
+sk_setstrobe(speed)
     Set strobe flash speed. Valid range 0-4.
 
-sk_fog(fog)
+sk_setfog(fog)
     Turn the fogger on or off.
 
 sk_setred(red)
