@@ -6,11 +6,12 @@
  * by Stephen M.Cameron
  *
  * Additional modifications to create a support library for the Rock Band Stage Kit from PDP
- * by Wayne M. Galen
+ * by Wayne M. Galen and David Maher
  *
  * Copyright 2001-2002 Johann Deneux <deneux@ifrance.com>
  * Copyright 2008 Stephen M. Cameron <smcameron@yahoo.com>
  * Copyright 2010 Wayne M. Galen <wayne.galen@gmail.com>
+ * Copyright 2019-2020 David Maher
  */
 
 /*
@@ -27,9 +28,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * You can contact the author by email at this address:
- * Wayne M. Galen <wayne.galen@gmail.com>
  */
 
 #include <fcntl.h>
