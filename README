@@ -1,5 +1,6 @@
 RockBand StageKit API
 Linux support libraries for the PDP Rock Band Stage Kit, including full control over the strobe, fog, and LED lights.
+Currently only supports Linux.
 -----------------------------
 
 USAGE:
