@@ -218,7 +218,7 @@ int sk_setstrobe(unsigned short speed, char** errorStr)
     }
     else if (speed == 4)
     {
-        error = send_raw_value(0, STAGEKIT_FAST_STROBE, errorStr);
+        error = send_raw_value(0, STAGEKIT_FASTEST_STROBE, errorStr);
     }
     else
     {
